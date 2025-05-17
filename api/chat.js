@@ -1,12 +1,12 @@
-const express = require("express");
-const router = express.Router();
-const fetch = require("node-fetch");
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Método no permitido" });
+  }
 
-router.post("/", async (req, res) => {
   const messages = req.body.messages;
 
   try {
-    const response = await fetch("/api/chat", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -20,11 +20,9 @@ router.post("/", async (req, res) => {
     });
 
     const data = await response.json();
-    res.json(data);
+    return res.status(200).json(data);
   } catch (error) {
-    console.error("OpenRouter error:", error);
-    res.status(500).json({ error: "Error en OpenRouter" });
+    console.error("Error en OpenRouter:", error);
+    return res.status(500).json({ error: "Error en el servidor" });
   }
-});
-
-module.exports = router;
+}
