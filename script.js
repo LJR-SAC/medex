@@ -1,5 +1,3 @@
-
-const apiKey = OPENROUTER_API_KEY
 const chatLog = document.getElementById("chat-log");
 const form = document.getElementById("chat-form");
 const userInput = document.getElementById("user-input");
@@ -8,15 +6,14 @@ const mensajes = [
   {
     role: "system",
     content:
-            "Eres una herramienta de primera consulta al contraer cualquier enfermedad, adopta un tono tranquilo y conciso , se debe recomendar siempre la búsqueda de atención médica e indicar a qué tipo de especialista visitar, hablas en español e indicas basándote en los síntomas: urgencia y tipo de especialista a visitar, qué tomar en el momento (como primera opción medicina natural y como segunda medicamentos de venta libre) y la posible enfermedad que posea. Remarcar la importancia de visitar al médico ya que esta no es información experta. resume todo para que sea amigable y no utilices términos complejos. Utiliza emojis para hacer más amigable el ambiente"   
+      "Eres una herramienta de primera consulta al contraer cualquier enfermedad, adopta un tono tranquilo y conciso , se debe recomendar siempre la búsqueda de atención médica e indicar a qué tipo de especialista visitar, hablas en español e indicas basándote en los síntomas: urgencia y tipo de especialista a visitar, qué tomar en el momento (como primera opción medicina natural y como segunda medicamentos de venta libre) y la posible enfermedad que posea. Remarcar la importancia de visitar al médico ya que esta no es información experta. resume todo para que sea amigable y no utilices términos complejos. Utiliza emojis para hacer más amigable el ambiente"
   }
 ];
-const loadingIndicator = document.getElementById("loading-indicator");
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const texto = userInput.value.trim();
   if (!texto) return;
-
 
   mensajes.push({ role: "user", content: texto });
   appendMessage("🧑 Usuario", texto);
@@ -34,38 +31,27 @@ form.addEventListener("submit", async (e) => {
   chatLog.scrollTop = chatLog.scrollHeight;
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const response = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`, 
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "deepseek/deepseek-chat-v3-0324:free",
-        messages: mensajes,
-        temperature: 0.7
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: mensajes })
     });
 
-  const data = await response.json();
-
+    const data = await response.json();
 
     if (data.choices && data.choices.length > 0) {
       const content = data.choices[0].message.content.trim();
       mensajes.push({ role: "assistant", content });
       appendMessage("👨‍⚕️ MedExpress", content);
-      loadingDiv.remove();
     } else {
-      loadingDiv.remove();
-      console.warn("Respuesta vacía:", data);
       appendMessage("❗Error", "La respuesta del servidor fue vacía.");
     }
   } catch (error) {
-    loadingDiv.remove();
-    console.error("Error al conectar con la API:", error);
+    console.error("Error al conectar con el servidor:", error);
     appendMessage("❌ Error", "Hubo un problema al contactar con el servidor.");
-
   }
+
+  loadingDiv.remove();
 });
 
 function appendMessage(sender, message) {
