@@ -1,5 +1,5 @@
 
-const apiKey = "OPENROUTER_API_KEY"
+const apiKey = OPENROUTER_API_KEY
 const chatLog = document.getElementById("chat-log");
 const form = document.getElementById("chat-form");
 const userInput = document.getElementById("user-input");
