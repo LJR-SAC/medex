@@ -1,5 +1,5 @@
 
-const apiKey = "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"
+const apiKey = "OPENROUTER_API_KEY"
 const chatLog = document.getElementById("chat-log");
 const form = document.getElementById("chat-form");
 const userInput = document.getElementById("user-input");
